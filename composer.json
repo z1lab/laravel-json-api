@@ -1,5 +1,5 @@
 {
-  "name": "z1lab/laravel-api-resource",
+  "name": "z1lab/laravel-json-api",
   "type": "library",
   "description": "A minimal library for normalize Laravel app to return Json Api results.",
   "license": "MIT",
