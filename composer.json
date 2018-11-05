@@ -40,6 +40,13 @@
       "Z1lab\\JsonApi\\": "src/"
     }
   },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Z1lab\\JsonApi\\ApiServiceProvider"
+      ]
+    }
+  },
   "minimum-stability": "dev",
   "prefer-stable": true
 }

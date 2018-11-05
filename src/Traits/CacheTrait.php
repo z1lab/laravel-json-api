@@ -18,7 +18,7 @@ trait CacheTrait
      */
     public function cacheTime(int $time)
     {
-        return (config('cache.lifetime') > 0) ? $time : 0;
+        return (config('json_api.cache_lifetime') > 0) ? $time : 0;
     }
 
     /**
@@ -26,7 +26,7 @@ trait CacheTrait
      */
     public function cacheDefault(): int
     {
-        return config('cache.lifetime');
+        return config('json_api.cache_lifetime');
     }
 
     /**
@@ -34,7 +34,7 @@ trait CacheTrait
      */
     public function cacheHour(): int
     {
-        return (config('cache.lifetime') > 0) ? 60 : 0;
+        return (config('json_api.cache_lifetime') > 0) ? 60 : 0;
     }
 
     /**
@@ -42,7 +42,7 @@ trait CacheTrait
      */
     public function cacheDay(): int
     {
-        return (config('cache.lifetime') > 0) ? 1440 : 0;
+        return (config('json_api.cache_lifetime') > 0) ? 1440 : 0;
     }
 
     /**
@@ -50,6 +50,6 @@ trait CacheTrait
      */
     public function cacheMonth(): int
     {
-        return (config('cache.lifetime') > 0) ? 43200 : 0;
+        return (config('json_api.cache_lifetime') > 0) ? 43200 : 0;
     }
 }

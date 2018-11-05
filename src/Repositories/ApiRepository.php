@@ -31,7 +31,7 @@ abstract class ApiRepository implements RepositoryInterface
     {
         $this->model = $model;
         $this->cacheKey = $cacheKey;
-        $this->pages = (int)env('PAGINATION_SIZE', 10);
+        $this->pages = config('json_api.pagination_size');
     }
 
     /**
