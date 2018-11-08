@@ -8,11 +8,12 @@
 
 namespace Z1lab\JsonApi\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest as LaravelFormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Foundation\Http\FormRequest as LaravelFormRequest;
+use Z1lab\JsonApi\Exceptions\ErrorObject;
 
 abstract class ApiFormRequest extends LaravelFormRequest
 {
@@ -22,6 +23,7 @@ abstract class ApiFormRequest extends LaravelFormRequest
      * @return array
      */
     abstract public function rules();
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -38,6 +40,8 @@ abstract class ApiFormRequest extends LaravelFormRequest
     {
         $errors = (new ValidationException($validator))->errors();
 
-        throw new HttpResponseException(response()->json(['errors' => $errors], JsonResponse::HTTP_UNPROCESSABLE_ENTITY));
+        $errors = new ErrorObject($errors, JsonResponse::HTTP_UNPROCESSABLE_ENTITY, $errors);
+
+        throw new HttpResponseException(response()->json($errors->toArray(), JsonResponse::HTTP_UNPROCESSABLE_ENTITY));
     }
 }

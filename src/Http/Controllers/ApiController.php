@@ -67,7 +67,6 @@ abstract class ApiController extends BaseController
         return $this->makeResource($this->repository->find($id));
     }
 
-
     /**
      * @param string $id
      * @return \Illuminate\Http\JsonResponse

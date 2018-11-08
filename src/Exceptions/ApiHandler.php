@@ -15,6 +15,7 @@ class ApiHandler extends BaseHandler
 {
     /**
      * Fix for error in Optimus\Heimdal\ExceptionHandler thats throws all error as \Illuminate\Http\Response::HTTP_INTERNAL_SERVER_ERROR
+     *
      * @param \Illuminate\Http\Request $request
      * @param Exception                $e
      * @return \Symfony\Component\HttpFoundation\Response

@@ -21,6 +21,7 @@ class ApiServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerConfig();
+        $this->registerTranslations();
     }
 
     /**
@@ -35,5 +36,17 @@ class ApiServiceProvider extends ServiceProvider
         ], 'json-api-config');
 
         $this->mergeConfigFrom(__DIR__ . '/../config/json.api.php', 'json_api');
+    }
+
+    /**
+     * Register the translations files
+     */
+    public function registerTranslations()
+    {
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'json_api');
+
+        $this->publishes([
+            __DIR__.'/../resources/lang' => resource_path('lang/vendor/json_api'),
+        ]);
     }
 }
