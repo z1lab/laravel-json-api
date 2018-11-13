@@ -74,7 +74,9 @@ class ErrorObject
      */
     public function getStatus()
     {
-        return "{$this->getCode()} - " . Response::$statusTexts[$this->getCode()];
+        if ($this->getCode() >= 400 && $this->getCode() <= 500) return "{$this->getCode()} - " . Response::$statusTexts[$this->getCode()];
+
+        return (string)$this->getCode();
     }
 
     /**
