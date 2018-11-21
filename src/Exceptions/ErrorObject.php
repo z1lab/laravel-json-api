@@ -102,7 +102,7 @@ class ErrorObject
      */
     public function getDetail()
     {
-        if(is_array($this->errors)) return (string)array_first($this->errors)[0];
+        if(is_array($this->errors)) return (string) array_first($this->errors);
 
         return (string)$this->errors;
     }
