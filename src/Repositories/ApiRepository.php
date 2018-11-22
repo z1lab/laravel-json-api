@@ -173,7 +173,7 @@ abstract class ApiRepository implements RepositoryInterface
      */
     public function remember($data)
     {
-        Cache::tags($this->namespace)->set($this->cacheKey, $this->cacheDefault(), $data);
+        Cache::tags($this->namespace)->put($this->cacheKey, $data, $this->cacheDefault());
 
         return $this;
     }
