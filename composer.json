@@ -30,6 +30,7 @@
     "illuminate/validation": "5.7.*",
     "barryvdh/laravel-httpcache": "^0.3.4",
     "barryvdh/laravel-cors": "^0.11.2",
+    "predis/predis": "^1.1",
     "illuminate/contracts": "5.7.*"
   },
   "require-dev": {

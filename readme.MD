@@ -10,6 +10,8 @@ Define .env keys:
 
 `PAGINATION_SIZE` for define the page size of collection results (Ex: GET index method).
 
+PS: This package manipulate the cache using Cache::tags() so change the the `CACHE_DRIVER` to `redis` or `memcache` and install the required dephs. By default the `predis/predis` is included on the composer.json.
+
 ## Introduction
 
 Laravel Json Api is a minimal library for normalize Laravel Apps to return Json Api results.
@@ -124,6 +126,8 @@ The ApiRepository delivery some common methods for you handle your data accross 
 `public function list(int $items = 0) {}`
 
 `public function findWhere(string $column, $value, array $with = []) {}`
+
+`public function all(array $keys = []) {}`
 
 ## License
 

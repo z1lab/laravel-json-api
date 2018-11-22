@@ -38,6 +38,20 @@ interface RepositoryInterface
     public function find(string $id, array $with = []);
 
     /**
+     * @param string $column
+     * @param        $value
+     * @param array  $with
+     * @return mixed
+     */
+    public function findWhere(string $column, $value, array $with = []);
+
+    /**
+     * @param array $keys
+     * @return mixed
+     */
+    public function all(array $keys = []);
+
+    /**
      * @param int $items
      * @return mixed
      */

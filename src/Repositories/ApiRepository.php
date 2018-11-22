@@ -8,8 +8,8 @@
 
 namespace Z1lab\JsonApi\Repositories;
 
-use Z1lab\JsonApi\Traits\CacheTrait;
 use Illuminate\Support\Facades\Cache;
+use Z1lab\JsonApi\Traits\CacheTrait;
 
 abstract class ApiRepository implements RepositoryInterface
 {
@@ -19,19 +19,31 @@ abstract class ApiRepository implements RepositoryInterface
      */
     protected $model;
     /**
-     * @var string
-     */
-    protected $cacheKey;
-    /**
      * @var int
      */
     protected $pages;
+    /**
+     * @var string
+     */
+    protected $namespace;
+    /**
+     * @var string
+     */
+    protected $cacheKey;
 
-    public function __construct($model, string $cacheKey)
+    /**
+     * ApiRepository constructor.
+     *
+     * @param        $model
+     * @param string $namespace
+     */
+    public function __construct($model, string $namespace)
     {
         $this->model = $model;
-        $this->cacheKey = $cacheKey;
+        $this->namespace = $namespace;
         $this->pages = config('json_api.pagination_size');
+
+        $this->setCacheKey($namespace);
     }
 
     /**
@@ -40,7 +52,12 @@ abstract class ApiRepository implements RepositoryInterface
      */
     public function create(array $data)
     {
-        return $this->model->create($data);
+        $item = $this->model->create($data);
+
+        $this->setCacheKey($item->id);
+        $this->remember($item);
+
+        return $item;
     }
 
     /**
@@ -53,6 +70,9 @@ abstract class ApiRepository implements RepositoryInterface
         $item = $this->find($id);
         $item->update($data);
 
+        $this->setCacheKey($id);
+        $this->flush()->remember($item);
+
         return $item->fresh();
     }
 
@@ -62,6 +82,8 @@ abstract class ApiRepository implements RepositoryInterface
      */
     public function destroy(string $id): bool
     {
+        $this->flush();
+
         return $this->find($id)->destroy($id);
     }
 
@@ -72,11 +94,13 @@ abstract class ApiRepository implements RepositoryInterface
      */
     public function find(string $id, array $with = [])
     {
-        $item = Cache::remember("{$this->cacheKey}-{$id}", $this->cacheDefault(), function () use ($id, $with) {
+        $this->setCacheKey($id);
+
+        $item = Cache::tags($this->namespace)->remember($this->cacheKey, $this->cacheDefault(), function () use ($id, $with) {
             return $this->model->with($with)->find($id);
         });
 
-        if (NULL === $item) abort(404);
+        if (!$this->emptyResult($item)) abort(404);
 
         return $item;
     }
@@ -87,7 +111,7 @@ abstract class ApiRepository implements RepositoryInterface
      */
     public function list(int $items = 0)
     {
-        if($items === 0) $items = $this->pages;
+        if ($items === 0) $items = $this->pages;
 
         return $this->model->paginate($items);
     }
@@ -100,10 +124,87 @@ abstract class ApiRepository implements RepositoryInterface
      */
     public function findWhere(string $column, $value, array $with = [])
     {
-        $item = $this->model->with($with)->where($column, $value)->first();
+        $this->setCacheKey($column . str_slug($value));
 
-        if (NULL === $item) abort(404);
+        $item = Cache::tags($this->namespace)->remember($this->cacheKey, $this->cacheDefault(), function () use ($with, $column, $value) {
+            return $this->model->with($with)->where($column, $value)->first();
+        });
+
+        if (!$this->emptyResult($item)) abort(404);
 
         return $item;
+    }
+
+    /**
+     * @param array $keys
+     * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model[]
+     */
+    public function all(array $keys = [])
+    {
+        $slug = empty($keys) ? '' : '-' . implode('-', $keys);
+
+        $this->setCacheKey($slug);
+
+        $data = Cache::tags($this->namespace)->remember($this->cacheKey, $this->cacheDefault(), function () use ($keys) {
+            return $this->model->all($keys);
+        });
+
+        if (!$this->emptyResult($data)) return $data;
+
+        return [];
+    }
+
+    /**
+     * @param $data
+     * @return bool
+     */
+    private function emptyResult($data): bool
+    {
+        if (NULL !== $data) return FALSE;
+
+        $this->forget();
+
+        return TRUE;
+    }
+
+    /**
+     * @param $data
+     * @return $this
+     */
+    public function remember($data)
+    {
+        Cache::tags($this->namespace)->set($this->cacheKey, $this->cacheDefault(), $data);
+
+        return $this;
+    }
+
+    /**
+     * Remove the regsiter from cache
+     */
+    public function forget()
+    {
+        Cache::forget($this->cacheKey);
+
+        return $this;
+    }
+
+    /**
+     * Remove all register from $this->namespace from cache
+     */
+    public function flush()
+    {
+        Cache::tags($this->namespace)->flush();
+
+        return $this;
+    }
+
+    /**
+     * @param $value
+     */
+    protected function setCacheKey(string $value)
+    {
+        ($this->cacheKey === NULL)
+            ? $this->cacheKey = $value
+            : $this->cacheKey .= "-$value";
     }
 }
