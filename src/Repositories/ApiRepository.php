@@ -100,7 +100,7 @@ abstract class ApiRepository implements RepositoryInterface
             return $this->model->with($with)->find($id);
         });
 
-        if (!$this->emptyResult($item)) abort(404);
+        if ($this->emptyResult($item)) abort(404);
 
         return $item;
     }
@@ -130,7 +130,7 @@ abstract class ApiRepository implements RepositoryInterface
             return $this->model->with($with)->where($column, $value)->first();
         });
 
-        if (!$this->emptyResult($item)) abort(404);
+        if ($this->emptyResult($item)) abort(404);
 
         return $item;
     }
