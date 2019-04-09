@@ -9,6 +9,7 @@
 namespace Z1lab\JsonApi\Repositories;
 
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use Z1lab\JsonApi\Traits\CacheTrait;
 
 abstract class ApiRepository implements RepositoryInterface
@@ -124,7 +125,7 @@ abstract class ApiRepository implements RepositoryInterface
      */
     public function findWhere(string $column, $value, array $with = [])
     {
-        $this->setCacheKey($column . str_slug($value));
+        $this->setCacheKey($column . Str::slug($value));
 
         $item = Cache::tags($this->namespace)->remember($this->cacheKey, $this->cacheDefault(), function () use ($with, $column, $value) {
             return $this->model->with($with)->where($column, $value)->first();

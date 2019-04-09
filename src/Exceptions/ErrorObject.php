@@ -9,6 +9,7 @@
 namespace Z1lab\JsonApi\Exceptions;
 
 use Illuminate\Http\Response;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 class ErrorObject
@@ -103,9 +104,9 @@ class ErrorObject
     public function getDetail()
     {
         if (is_array($this->errors)) {
-            return is_array(array_first($this->errors))
-                ? (string)array_first($this->errors)[0]
-                : (string)array_first($this->errors);
+            return is_array(Arr::first($this->errors))
+                ? (string)Arr::first($this->errors)[0]
+                : (string)Arr::first($this->errors);
         }
 
         return (string)$this->errors;

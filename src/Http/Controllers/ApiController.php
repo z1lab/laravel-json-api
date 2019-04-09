@@ -45,7 +45,7 @@ abstract class ApiController extends BaseController
      */
     public function __construct($repository, string $resource)
     {
-        if (getenv('APP_ENV') === 'production') $this->middleware('ttl')->only($this->cacheable);
+        if (config('app.env') === 'production') $this->middleware('ttl')->only($this->cacheable);
         $this->repository = $repository;
         $this->resource = $resource;
     }
